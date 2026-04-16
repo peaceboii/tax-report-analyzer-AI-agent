@@ -1,86 +1,104 @@
-# AI Tax Report Analyzer — AI Agent
+# 🧾 AI Tax Report Analyzer — AI Agent
 
-> **Production-ready AI Tax Assistant** powered by Gemini + LangGraph + Supabase
+> **Production-ready multi-agent AI Tax Assistant** powered by Google Gemini, LangGraph, ChromaDB, and Supabase.
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://python.org)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.44%2B-red?logo=streamlit)](https://streamlit.io)
-[![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-orange)](https://github.com/langchain-ai/langgraph)
-[![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20DB-green?logo=supabase)](https://supabase.com)
-[![Gemini](https://img.shields.io/badge/Gemini-Flash-blue?logo=google)](https://ai.google.dev)
-
----
-
-## 📸 Screenshots
-
-| Login Screen | Main Chat | Light Mode |
-|---|---|---|
-| OAuth + Email login via Supabase | Sidebar history, `+` popover, chat | Full light theme toggle |
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Streamlit_Cloud-FF4B4B?style=for-the-badge)](https://tax-report-analyzer-ai-agent-p9cy8ua9xqvkpdsj9evbq3.streamlit.app/)
+[![GitHub](https://img.shields.io/badge/GitHub-peaceboii-181717?style=for-the-badge&logo=github)](https://github.com/peaceboii/tax-report-analyzer-AI-agent)
+[![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python)](https://python.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.44+-red?style=for-the-badge&logo=streamlit)](https://streamlit.io)
 
 ---
 
-## 🌟 Features
+## 🌐 Live App
 
-### 🤖 AI Pipeline (LangGraph Multi-Agent)
-- **Retrieval Agent** — Searches ChromaDB vector store for uploaded document context
-- **Web Search Agent** — Auto-scrapes Google when RAG context is insufficient
-- **Tax Analyzer** — Injects country-specific tax rules (India, Australia)
-- **Response Agent** — Gemini Flash synthesizes a beautifully structured answer
+**→ [https://tax-report-analyzer-ai-agent-p9cy8ua9xqvkpdsj9evbq3.streamlit.app/](https://tax-report-analyzer-ai-agent-p9cy8ua9xqvkpdsj9evbq3.streamlit.app/)**
 
-### 🔐 Authentication
-- Supabase OAuth (Google) login with Magic Link / Email fallback
-- **Guest mode** for quick access without sign-in
-- Per-user data isolation in both ChromaDB (vector store) and Postgres (history)
+Sign in with **Google OAuth** or continue as a **Guest** to try the app instantly.
+
+---
+
+## ✨ Features
+
+### 🤖 Multi-Agent LangGraph Pipeline
+```
+User Query
+    │
+    ▼
+[Retrieval Agent]  ──  Searches uploaded documents via ChromaDB (per-user isolated)
+    │
+    ▼
+[Web Search Agent] ──  Auto-scrapes Google when document context is insufficient
+    │
+    ▼
+[Tax Analyzer]     ──  Injects country-specific tax rules (India 🇮🇳 / Australia 🇦🇺)
+    │
+    ▼
+[Response Agent]   ──  Google Gemini synthesizes a beautifully structured answer
+```
+
+### 🔐 Authentication & Persistence
+- **Google OAuth** via Supabase — secure, session-based login
+- **Guest mode** — full access without sign-in, local session
+- **Per-user data isolation** — ChromaDB vectors and Postgres history scoped to each user ID
+- **Persistent chat history** — all sessions saved to Supabase Postgres, restored on login
 
 ### 💬 Chat Interface
-- Sidebar with persistent chat history fetched from Supabase Postgres
-- `+` popover menu for file upload, country selection, tool toggles
-- 🌙 **Dark / Light theme toggle** in the top-right corner
-- Native `st.chat_message` rendering — no raw HTML bleed
+| Feature | Detail |
+|---------|--------|
+| Sidebar | Chat history list, sign-out, document chips, status pills |
+| `+` Popover | File upload, country selector, tool toggles |
+| 🌙 Theme toggle | Dark / Light mode in top-right corner |
+| Chat bubbles | Native `st.chat_message` — clean, no raw HTML |
+| Sources expander | Web sources shown inline under AI responses |
 
 ### 📄 Document Processing
-- Supports **PDF** (PyMuPDF), **Excel/CSV** (pandas), **Images** (Tesseract OCR + Gemini Vision fallback)
-- Documents embedded with Google's `embedding-001` model and stored per-user in ChromaDB
+| Format | Handler |
+|--------|---------|
+| PDF | PyMuPDF — full text extraction |
+| Excel / CSV | pandas — tabular data context |
+| Images | Tesseract OCR (local) → Gemini Vision (fallback) |
 
-### 🛠️ Tools
-- ⚡ **Tax Optimization Mode** — Proactively suggests legal tax-saving strategies
-- 🔬 **Deep Analysis Mode** — Full technical breakdown with regulatory citations
-- 🌏 **Multi-country** — India (Section 80C, LTCG, etc.) and Australia (CGT, FBT, etc.)
+### 🛠️ Analysis Tools
+- ⚡ **Tax Optimization Mode** — proactively suggests legal tax-saving strategies
+- 🔬 **Deep Analysis Mode** — full technical breakdown with regulatory citations
+- 🌏 **Multi-country** — India (Sec 80C, LTCG, NPS, HRA…) and Australia (CGT, FBT, super…)
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  Streamlit Frontend (app/main.py)                   │
-│  • Supabase Auth Gate                               │
-│  • st.chat_message + st.sidebar + st.popover       │
-│  • Dark/Light Theme Toggle                          │
-└───────────────┬─────────────────────────────────────┘
-                │
-                ▼
-┌─────────────────────────────────────────────────────┐
-│  LangGraph Pipeline (agents/graph.py)               │
-│                                                     │
-│  retrieval ──► web_search ──► tax_analyzer ──► response │
-│      │                                        │     │
-│  ChromaDB                               Gemini Flash│
-│  (per user)                          (gemini-flash) │
-└─────────────────────────────────────────────────────┘
-                │
-                ▼
-┌─────────────────────────────────────────────────────┐
-│  Supabase Postgres                                  │
-│  • chat_sessions  (user_id, title, created_at)      │
-│  • messages       (session_id, role, content)       │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│  Streamlit Frontend (app/main.py)                            │
+│  • Supabase Auth Gate (Google OAuth + Guest Mode)            │
+│  • Sidebar: history, docs, sign-out                          │
+│  • Header: title, country badge, 🌙 dark/light toggle        │
+│  • Bottom bar: [+] popover | st.chat_input                   │
+└────────────────────────┬─────────────────────────────────────┘
+                         │
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│  LangGraph Pipeline (agents/graph.py)                        │
+│                                                              │
+│  retrieval → web_search → tax_analyzer → response_agent     │
+│      │                                         │             │
+│  ChromaDB                              Gemini Flash          │
+│  (per-user vectors)               (gemini-flash-latest)      │
+└────────────────────────┬─────────────────────────────────────┘
+                         │
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│  Supabase Postgres                                           │
+│  • chat_sessions (id, user_id, title, created_at)           │
+│  • messages      (id, session_id, role, content, sources)   │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Local)
 
-### 1. Clone the repo
+### 1. Clone
 ```bash
 git clone https://github.com/peaceboii/tax-report-analyzer-AI-agent.git
 cd tax-report-analyzer-AI-agent
@@ -91,21 +109,18 @@ cd tax-report-analyzer-AI-agent
 pip install -r requirements.txt
 ```
 
-> **Optional:** Install Tesseract OCR for image processing  
-> Windows: Download from [tesseract-ocr.github.io](https://tesseract-ocr.github.io/)
+> **Optional for image OCR:** Install [Tesseract OCR](https://tesseract-ocr.github.io/)  
+> Windows: `C:\Program Files\Tesseract-OCR\tesseract.exe`
 
 ### 3. Configure environment
 ```bash
 cp .env.example .env
-# Fill in your credentials
 ```
-
+Fill in your `.env`:
 ```env
-# .env
 GOOGLE_API_KEY=your_gemini_api_key
 GEMINI_MODEL=gemini-flash-latest
-
-LLM_BACKEND=gemini   # or: ollama
+LLM_BACKEND=gemini
 
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_KEY=your_supabase_anon_key
@@ -116,10 +131,9 @@ CHROMA_PERSIST_DIR=./data/chroma_db
 
 ### 4. Set up Supabase tables
 
-Run this SQL in your **Supabase SQL Editor**:
+Run in your **Supabase SQL Editor** (`supabase.com/dashboard → SQL Editor`):
 
 ```sql
--- Chat sessions per user
 CREATE TABLE IF NOT EXISTS chat_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id TEXT NOT NULL,
@@ -127,7 +141,6 @@ CREATE TABLE IF NOT EXISTS chat_sessions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );
 
--- Messages per session
 CREATE TABLE IF NOT EXISTS messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     session_id UUID REFERENCES chat_sessions(id) ON DELETE CASCADE,
@@ -136,21 +149,22 @@ CREATE TABLE IF NOT EXISTS messages (
     sources JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );
-
--- Enable Row Level Security
-ALTER TABLE chat_sessions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 ```
 
-Also enable **Google OAuth** in your Supabase dashboard:  
-`Authentication → Providers → Google → Enable`
+### 5. Enable Google OAuth (optional)
 
-### 5. Run the app
+| Step | Where | Action |
+|------|-------|--------|
+| 1 | [Google Cloud Console](https://console.cloud.google.com/apis/credentials) | Create OAuth 2.0 Client ID (Web app) |
+| 2 | Authorized redirect URIs | Add `https://your-project.supabase.co/auth/v1/callback` |
+| 3 | [Supabase Auth Providers](https://supabase.com/dashboard/project/_/auth/providers) | Enable Google, paste Client ID + Secret |
+| 4 | [Supabase URL Config](https://supabase.com/dashboard/project/_/auth/url-configuration) | Set Site URL to your app URL |
+
+### 6. Run
 ```bash
 python -m streamlit run app/main.py
 ```
-
-Open [http://localhost:8501](http://localhost:8501)
+Open → [http://localhost:8501](http://localhost:8501)
 
 ---
 
@@ -159,71 +173,78 @@ Open [http://localhost:8501](http://localhost:8501)
 ```
 tax-report-analyzer-AI-agent/
 ├── app/
-│   └── main.py              # Streamlit UI — auth, chat, theme
+│   └── main.py              # Streamlit UI — auth, sidebar, chat, theme toggle
 ├── agents/
-│   ├── graph.py             # LangGraph multi-agent pipeline
-│   └── tax_rules.py         # Country-specific tax rule context
+│   ├── graph.py             # LangGraph 4-node multi-agent pipeline
+│   └── tax_rules.py         # Country-specific tax rule context (India/Australia)
 ├── rag/
-│   └── store.py             # ChromaDB vector store (per-user)
+│   └── store.py             # Per-user ChromaDB vector store with user_id filtering
 ├── utils/
-│   ├── parsers.py           # PDF / Excel / Image extraction
-│   ├── chunker.py           # Text chunking utility
-│   ├── web_scraper.py       # Google search + web scraping
-│   └── db.py                # Supabase Postgres wrapper
+│   ├── parsers.py           # PDF / Excel / Image extraction with OCR fallback
+│   ├── chunker.py           # Text chunking with overlap
+│   ├── web_scraper.py       # Google search + BeautifulSoup scraping
+│   └── db.py                # Supabase Postgres wrapper (sessions + messages)
 ├── ui/
-│   ├── style.css            # Dark theme
-│   └── light.css            # Light theme overrides
+│   ├── style.css            # Full dark theme with Inter font, glassmorphism pills
+│   └── light.css            # Light theme override layer
 ├── .streamlit/
-│   └── config.toml          # Streamlit server config
+│   └── config.toml          # Streamlit server + theme config
 ├── .env.example             # Environment variable template
+├── runtime.txt              # Python 3.11 pin for Streamlit Cloud
 ├── requirements.txt         # Python dependencies
 └── README.md
 ```
 
 ---
 
-## 🌐 Deployment
+## ☁️ Deployment (Streamlit Cloud)
 
-### Streamlit Cloud
-1. Fork this repo
-2. Go to [share.streamlit.io](https://share.streamlit.io) → New app
-3. Set **Main file path:** `app/main.py`
-4. Add secrets in the Streamlit Cloud dashboard (from your `.env`)
+The app is deployed at:  
+**https://tax-report-analyzer-ai-agent-p9cy8ua9xqvkpdsj9evbq3.streamlit.app/**
 
-### Environment Variables for Deployment
-| Key | Description |
-|-----|-------------|
-| `GOOGLE_API_KEY` | Gemini API key from [ai.google.dev](https://ai.google.dev) |
-| `GEMINI_MODEL` | e.g., `gemini-flash-latest` |
-| `SUPABASE_URL` | Your Supabase project URL |
-| `SUPABASE_KEY` | Supabase anon/publishable key |
-| `DATABASE_URL` | Postgres connection string |
-| `CHROMA_PERSIST_DIR` | Local path for ChromaDB persistence |
+### To deploy your own fork:
+1. Fork this repo on GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io) → **Create app**
+3. Select your fork, branch `main`, main file `app/main.py`
+4. Under **Advanced settings → Secrets**, add:
+
+```toml
+GOOGLE_API_KEY = "your_key"
+GEMINI_MODEL = "gemini-flash-latest"
+LLM_BACKEND = "gemini"
+SUPABASE_URL = "https://your-project.supabase.co"
+SUPABASE_KEY = "your_anon_key"
+DATABASE_URL = "postgresql://postgres:password@db.your-project.supabase.co:5432/postgres"
+CHROMA_PERSIST_DIR = "./data/chroma_db"
+```
+
+5. Click **Deploy**
 
 ---
 
 ## 🧠 Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Streamlit 1.44+ |
-| AI Orchestration | LangGraph + LangChain |
-| LLM | Google Gemini Flash |
-| Vector Store | ChromaDB (local persistent) |
-| Auth & Database | Supabase (Postgres + OAuth) |
-| Embeddings | Google `embedding-001` |
-| PDF Parsing | PyMuPDF |
-| OCR | Tesseract + Gemini Vision fallback |
-| Web Search | BeautifulSoup + requests |
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Frontend | Streamlit 1.44+ | UI, chat interface, theming |
+| Auth | Supabase + streamlit-supabase-auth | Google OAuth, session management |
+| Database | Supabase Postgres | Persistent chat history per user |
+| AI Orchestration | LangGraph + LangChain | Multi-agent pipeline |
+| LLM | Google Gemini Flash | Response generation |
+| Vector Store | ChromaDB (local persistent) | Document semantic search |
+| Embeddings | Google `embedding-001` | Text vectorization |
+| Document Parsing | PyMuPDF, pandas, Pillow | PDF, Excel, Image support |
+| OCR | Tesseract + Gemini Vision | Image text extraction with fallback |
+| Web Search | BeautifulSoup + requests | Supplementary context retrieval |
 
 ---
 
 ## 📜 License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License — free to use, modify, and distribute.
 
 ---
 
-## 🙏 Acknowledgements
+## 🙏 Built With
 
-Built with [LangGraph](https://github.com/langchain-ai/langgraph), [Streamlit](https://streamlit.io), [Supabase](https://supabase.com), and [Google Gemini](https://ai.google.dev).
+[Google Gemini](https://ai.google.dev) · [LangGraph](https://github.com/langchain-ai/langgraph) · [Streamlit](https://streamlit.io) · [Supabase](https://supabase.com) · [ChromaDB](https://trychroma.com)
