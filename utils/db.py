@@ -58,5 +58,19 @@ def save_message(session_id: str, role: str, content: str, sources: list = None)
             "sources": sources or []
         }
         supabase.table("messages").insert(data).execute()
+        return True
     except Exception as e:
         print("Save message error:", e)
+        return False
+
+def check_db_health():
+    """Verifies connection and table accessibility."""
+    try:
+        supabase = get_supabase()
+        # Try to select 1 row from chat_sessions
+        supabase.table("chat_sessions").select("id").limit(1).execute()
+        # Try to select 1 row from messages
+        supabase.table("messages").select("id").limit(1).execute()
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

@@ -1,14 +1,34 @@
-/* ui/style.css — AI Tax Assistant Custom Styles */
+/* ui/style.css — AI Tax Assistant Premium Styles */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* ─── Root variables ─────────────────────────────────────────────────────── */
+/* ─── Global Variables (Dark theme by default) ─────────────────────────── */
 :root {
+  /* Colors */
   --accent: #4F8EF7;
   --accent-glow: rgba(79,142,247,0.20);
+  --accent-secondary: #6C63FF;
   --success: #22C55E;
   --warning: #F59E0B;
   --danger: #EF4444;
+  
+  /* Backgrounds */
+  --bg-main: #0E1117;
+  --bg-sidebar: #0D1320;
+  --bg-card: #111827;
+  --bg-bubble-ai: #131B2C;
+  --bg-input: #161B2A;
+  --bg-popover: #111827;
+  
+  /* Text */
+  --text-primary: #E2E8F0;
+  --text-secondary: #CBD5E0;
+  --text-muted: #718096;
+  --text-dim: #4A5568;
+  
+  /* Layout */
+  --border-subtle: #1E2A40;
+  --border-strong: #2D3748;
   --radius: 14px;
   --radius-sm: 8px;
 }
@@ -16,67 +36,22 @@
 /* ─── Global ─────────────────────────────────────────────────────────────── */
 html, body, .stApp, [data-testid="stAppViewContainer"] {
   font-family: 'Inter', sans-serif !important;
+  background-color: var(--bg-main) !important;
 }
 
-/* Hide Streamlit chrome */
+/* Hide Streamlit components */
 #MainMenu { visibility: hidden !important; }
 [data-testid="stToolbar"] { display: none !important; }
 footer { visibility: hidden !important; }
 
 /* ─── Sidebar ────────────────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {
-  background: #0D1320 !important;
-  border-right: 1px solid #1E2A40 !important;
+  background: var(--bg-sidebar) !important;
+  border-right: 1px solid var(--border-subtle) !important;
 }
 
 [data-testid="stSidebar"] * {
-  color: #CBD5E0 !important;
-}
-
-.sidebar-header {
-  padding: 6px 0 16px;
-  border-bottom: 1px solid #1E2A40;
-  margin-bottom: 16px;
-}
-
-.sidebar-header h2 {
-  font-size: 16px;
-  font-weight: 700;
-  color: #E2E8F0 !important;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.history-item {
-  background: #111827;
-  border: 1px solid #1E2A40;
-  border-radius: 10px;
-  padding: 10px 13px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: all 0.18s ease;
-}
-
-.history-item:hover {
-  border-color: #4F8EF7;
-  background: #162033;
-}
-
-.history-item .hist-query {
-  font-size: 12.5px;
-  color: #CBD5E0 !important;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.history-item .hist-time {
-  font-size: 10.5px;
-  color: #4A5568 !important;
-  margin-top: 3px;
+  color: var(--text-secondary) !important;
 }
 
 .doc-chip {
@@ -85,257 +60,129 @@ footer { visibility: hidden !important; }
   gap: 5px;
   background: rgba(79,142,247,0.12);
   border: 1px solid rgba(79,142,247,0.3);
-  color: #4F8EF7 !important;
+  color: var(--accent) !important;
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 11px;
   font-weight: 600;
   margin: 3px 2px;
-  cursor: default;
+}
+
+/* ─── Typography overrides ──────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6, .stMarkdown p {
+  color: var(--text-primary) !important;
 }
 
 /* ─── Main chat area ─────────────────────────────────────────────────────── */
 [data-testid="stMain"] {
-  background: #0E1117 !important;
+  background: var(--bg-main) !important;
 }
 
 /* Chat message containers */
 [data-testid="stChatMessage"] {
   border-radius: var(--radius) !important;
-  margin-bottom: 6px !important;
-  padding: 4px 8px !important;
+  margin-bottom: 8px !important;
+  padding: 8px 12px !important;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* User messages */
 [data-testid="stChatMessage"][data-testid*="user"],
 div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-  background: linear-gradient(135deg, rgba(79,142,247,0.12) 0%, rgba(108,99,255,0.12) 100%) !important;
-  border: 1px solid rgba(79,142,247,0.25) !important;
+  background: linear-gradient(135deg, rgba(79,142,247,0.1) 0%, rgba(108,99,255,0.1) 100%) !important;
+  border: 1px solid rgba(79,142,247,0.2) !important;
 }
 
 /* AI messages */
 div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-  background: #131B2C !important;
-  border: 1px solid #1E2A40 !important;
+  background: var(--bg-bubble-ai) !important;
+  border: 1px solid var(--border-subtle) !important;
 }
 
-/* ─── Chat input area ────────────────────────────────────────────────────── */
+/* ─── Chat Input "Blended" Styling ────────────────────────────────────────── */
 [data-testid="stChatInput"] {
-  background: #161B2A !important;
-  border: 1.5px solid #2D3748 !important;
+  background: var(--bg-input) !important;
+  border: 1.5px solid var(--border-strong) !important;
   border-radius: 14px !important;
+  padding-left: 45px !important; /* Make room for the blended (+) button */
 }
 
 [data-testid="stChatInput"]:focus-within {
-  border-color: #4F8EF7 !important;
-  box-shadow: 0 0 0 3px rgba(79,142,247,0.15) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-glow) !important;
 }
 
-[data-testid="stChatInputTextArea"] textarea {
-  color: #E2E8F0 !important;
-  background: transparent !important;
-  font-family: 'Inter', sans-serif !important;
-  font-size: 14.5px !important;
+/* ─── Plus Button Overlay (The Blend) ─────────────────────────────────── */
+.blended-plus-container {
+  position: fixed;
+  bottom: 34px;
+  left: 31%; /* Adjust based on sidebar width if needed */
+  z-index: 1000;
+  transform: translateX(-50%);
 }
 
-[data-testid="stChatInputSubmitButton"] button {
-  background: linear-gradient(135deg, #4F8EF7, #6C63FF) !important;
-  border-radius: 10px !important;
-  border: none !important;
+@media (max-width: 768px) {
+  .blended-plus-container { left: 50px; }
 }
 
-/* ─── Header / Metric pills ──────────────────────────────────────────────── */
-.app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  background: #0D1320;
-  border-bottom: 1px solid #1E2A40;
-  margin-bottom: 4px;
-}
-
-.app-title-text {
-  font-size: 19px;
-  font-weight: 700;
-  color: #E2E8F0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 13px;
+/* ─── Login Card styling ────────────────────────────────────────────────── */
+.login-card {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.pill-blue {
-  background: rgba(79,142,247,0.15);
-  border: 1px solid rgba(79,142,247,0.35);
-  color: #4F8EF7;
-}
-
-.pill-green {
-  background: rgba(34,197,94,0.12);
-  border: 1px solid rgba(34,197,94,0.3);
-  color: #22C55E;
-}
-
-.pill-amber {
-  background: rgba(245,158,11,0.12);
-  border: 1px solid rgba(245,158,11,0.3);
-  color: #F59E0B;
-}
-
-.pulse-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: #22C55E;
-  animation: pulse 2s infinite;
-  display: inline-block;
-}
-
-@keyframes pulse {
-  0%,100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.5; transform: scale(0.8); }
-}
-
-/* ─── Empty state / Welcome ──────────────────────────────────────────────── */
-.welcome-container {
-  text-align: center;
-  padding: 60px 20px 30px;
-}
-
-.welcome-icon {
-  font-size: 62px;
-  display: block;
-  margin-bottom: 20px;
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%,100% { transform: translateY(0); }
-  50%      { transform: translateY(-10px); }
-}
-
-.welcome-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #E2E8F0;
-  margin: 0 0 10px;
-}
-
-.welcome-sub {
-  font-size: 15px;
-  color: #718096;
-  max-width: 420px;
-  margin: 0 auto 30px;
-  line-height: 1.65;
-}
-
-/* ─── Source links ───────────────────────────────────────────────────────── */
-.sources-box {
-  background: #0D1320;
-  border: 1px solid #1E2A40;
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin-top: 10px;
-}
-
-.src-title {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #4A5568;
-  margin-bottom: 8px;
-}
-
-.src-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12.5px;
-  color: #4F8EF7;
-  text-decoration: none;
-  padding: 3px 0;
-  display: block;
-}
-
-.src-link:hover { text-decoration: underline; }
-
-/* ─── File processing banner ─────────────────────────────────────────────── */
-.processing-banner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(79,142,247,0.08);
-  border: 1px solid rgba(79,142,247,0.25);
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-size: 13px;
-  color: #4F8EF7;
-  margin-bottom: 10px;
-}
-
-/* ─── Popover / menu styling ─────────────────────────────────────────────── */
-[data-testid="stPopover"] [data-testid="stPopoverBody"] {
-  background: #111827 !important;
-  border: 1px solid #1E2A40 !important;
-  border-radius: 14px !important;
-  padding: 16px !important;
-  min-width: 320px !important;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
 .stButton > button {
   border-radius: 10px !important;
   font-weight: 600 !important;
-  font-family: 'Inter', sans-serif !important;
-  transition: all 0.2s ease !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .stButton > button[kind="primary"] {
-  background: linear-gradient(135deg, #4F8EF7, #6C63FF) !important;
+  background: linear-gradient(135deg, var(--accent), var(--accent-secondary)) !important;
   border: none !important;
   color: white !important;
-  box-shadow: 0 4px 16px rgba(79,142,247,0.3) !important;
+  box-shadow: 0 4px 12px rgba(79,142,247,0.25) !important;
 }
 
-/* ─── Selectbox / file uploader ──────────────────────────────────────────── */
-[data-testid="stFileUploader"] {
-  border: 2px dashed #2D3748 !important;
-  border-radius: 10px !important;
-  background: #0D1320 !important;
-  padding: 10px !important;
-  transition: border-color 0.2s;
+.stButton > button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(79,142,247,0.35) !important;
 }
 
-[data-testid="stFileUploader"]:hover {
-  border-color: #4F8EF7 !important;
+/* ─── Selectbox / Inputs ────────────────────────────────────────────────── */
+div[data-baseweb="select"] > div {
+  background-color: var(--bg-sidebar) !important;
+  border-color: var(--border-strong) !important;
 }
 
-/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2D3748; border-radius: 10px; }
-
-/* ─── Suggestion chip buttons ────────────────────────────────────────────── */
-.stButton > button[data-testid*="sug"] {
-  background: #111827 !important;
-  border: 1px solid #2D3748 !important;
-  color: #9AA0AC !important;
-  font-size: 13px !important;
-  padding: 8px 14px !important;
-  text-align: left !important;
+/* ─── Sidebar history pills ──────────────────────────────────────────────── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
 }
 
-.stButton > button[data-testid*="sug"]:hover {
-  border-color: #4F8EF7 !important;
-  color: #4F8EF7 !important;
+.pill-blue { background: rgba(79,142,247,0.12); color: var(--accent); }
+.pill-green { background: rgba(34,197,94,0.12); color: var(--success); }
+
+/* ─── Metrics ────────────────────────────────────────────────────────────── */
+[data-testid="stMetricValue"] {
+  color: var(--text-primary) !important;
 }

@@ -1,66 +1,71 @@
-/* Light Theme Variables */
+/* ui/light.css — AI Tax Assistant Light Theme Overrides */
+
 :root {
-  --bg-main: #FAFBFC;
-  --bg-sidebar: #F0F2F5;
-  --text-main: #1A202C;
-  --text-muted: #4A5568;
-  --border-color: #E2E8F0;
+  /* Colors */
+  --accent: #2563EB;
+  --accent-glow: rgba(37,99,235,0.15);
+  --accent-secondary: #4F46E5;
   
+  /* Backgrounds */
+  --bg-main: #F8FAFC;
+  --bg-sidebar: #F1F5F9;
+  --bg-card: #FFFFFF;
+  --bg-bubble-ai: #FFFFFF;
   --bg-input: #FFFFFF;
-  --bg-assistant-bubble: #FFFFFF;
-  --bg-user-bubble: linear-gradient(135deg, rgba(79,142,247,0.15) 0%, rgba(108,99,255,0.15) 100%);
-  --bg-item-hover: #E2E8F0;
   --bg-popover: #FFFFFF;
+  
+  /* Text */
+  --text-primary: #0F172A;
+  --text-secondary: #0F172A;
+  --text-muted: #64748B;
+  --text-dim: #94A3B8;
+  
+  /* Layout */
+  --border-subtle: #E2E8F0;
+  --border-strong: #CBD5E0;
 }
 
-/* Global mappings */
+/* Light Theme overrides for Streamlit internals */
 [data-testid="stSidebar"] {
   background: var(--bg-sidebar) !important;
-  border-right: 1px solid var(--border-color) !important;
 }
 
 [data-testid="stSidebar"] * {
-  color: var(--text-main) !important;
+  color: var(--text-primary) !important;
 }
 
 [data-testid="stMain"] {
   background: var(--bg-main) !important;
 }
 
-.sidebar-header, .app-header { border-bottom: 1px solid var(--border-color) !important; }
-.sidebar-header h2, .app-title-text, .welcome-title { color: var(--text-main) !important; }
-.welcome-sub, .hist-time { color: var(--text-muted) !important; }
+/* Fix chat message text for light mode */
+[data-testid="stMarkdownContainer"] p {
+  color: var(--text-primary) !important;
+}
 
+/* Login card light mode adjustment */
+.login-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(0,0,0,0.05) !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+}
+
+/* Sidebar history item fix */
 .history-item {
-  background: #FFFFFF;
-  border: 1px solid var(--border-color);
-  color: var(--text-main) !important;
+  background: white !important;
+  border: 1px solid var(--border-subtle) !important;
 }
-.history-item:hover { background: var(--bg-item-hover); }
+.history-item:hover {
+  background: #F1F5F9 !important;
+  border-color: var(--accent) !important;
+}
 
-/* Chat inputs and bubbles */
+/* Input area overrides */
 [data-testid="stChatInput"] {
-  background: var(--bg-input) !important;
-  border-color: var(--border-color) !important;
+  background: white !important;
+  border-color: var(--border-strong) !important;
 }
+
 [data-testid="stChatInputTextArea"] textarea {
-  color: var(--text-main) !important;
-}
-
-div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-  background: var(--bg-assistant-bubble) !important;
-  border: 1px solid var(--border-color) !important;
-}
-[data-testid="stChatMessage"][data-testid*="user"] {
-  background: var(--bg-user-bubble) !important;
-  border: 1px solid rgba(79,142,247,0.3) !important;
-}
-
-[data-testid="stPopover"] [data-testid="stPopoverBody"] {
-  background: var(--bg-popover) !important;
-  border: 1px solid var(--border-color) !important;
-}
-[data-testid="stFileUploader"] {
-  background: var(--bg-input) !important;
-  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
 }

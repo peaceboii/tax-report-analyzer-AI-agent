@@ -132,52 +132,54 @@ def process_file(file_bytes: bytes, filename: str) -> str:
 # AUTHENTICATION
 # ══════════════════════════════════════════════════════════════════════════════
 def render_auth():
-    """Show login screen. Falls back to guest mode if SUPABASE_KEY is missing."""
+    """Elegant centered login screen with glassmorphism."""
     inject_theme()
-
+    
+    # Background decoration
     st.markdown(
-        "<div style='text-align:center;padding:60px 20px 20px;'>"
-        "<span style='font-size:64px;'>🧾</span>"
-        "<h1 style='margin:16px 0 8px;'>AI Tax Assistant</h1>"
-        "<p style='color:#718096;font-size:15px;'>Sign in to save your history across sessions</p>"
+        "<div style='position:fixed; top:-100px; right:-100px; width:400px; height:400px; "
+        "background:radial-gradient(circle, var(--accent-glow) 0%, transparent 70%); z-index:-1;'></div>"
+        "<div style='position:fixed; bottom:-100px; left:-100px; width:400px; height:400px; "
+        "background:radial-gradient(circle, var(--accent-glow) 0%, transparent 70%); z-index:-1;'></div>",
+        unsafe_allow_html=True
+    )
+
+    st.write("## ") # Padding
+    st.write("## ") 
+
+    st.markdown("<div class='login-card'>", unsafe_allow_html=True)
+    
+    st.markdown(
+        "<div style='text-align:center; margin-bottom:34px;'>"
+        "<div style='font-size:56px; margin-bottom:16px;'>🧾</div>"
+        "<h1 style='margin:0; font-size:32px; font-weight:800; letter-spacing:-0.02em;'>TaxAI Assistant</h1>"
+        "<p style='color:var(--text-muted); font-size:15px; margin-top:8px;'>Professional Intelligent Tax Support</p>"
         "</div>",
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
 
     supabase_url = os.getenv("SUPABASE_URL", "")
     supabase_key = os.getenv("SUPABASE_KEY", "")
 
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if supabase_url and supabase_key:
-            try:
-                from streamlit_supabase_auth import login_form
-                session = login_form(
-                    url=supabase_url,
-                    apiKey=supabase_key,
-                    providers=["google"],
-                )
-                if session:
-                    st.session_state.user = session.get("user", {})
-                    _load_user_history()
-                    st.rerun()
-            except ImportError:
-                st.warning("Install `streamlit-supabase-auth`: `pip install streamlit-supabase-auth`")
-                _offer_guest_mode()
-            except Exception as e:
-                st.error(f"Auth error: {e}")
-                _offer_guest_mode()
-        else:
-            st.info(
-                "**Supabase key not configured.** "
-                "Add `SUPABASE_KEY=your_anon_key` to `.env` for cloud auth.\n\n"
-                "You can continue as a **guest** — history will be local only."
+    if supabase_url and supabase_key:
+        try:
+            from streamlit_supabase_auth import login_form
+            session = login_form(
+                url=supabase_url,
+                apiKey=supabase_key,
+                providers=["google"],
             )
-            _offer_guest_mode()
-
-
-def _offer_guest_mode():
+            if session:
+                st.session_state.user = session.get("user", {})
+                _load_user_history()
+                st.rerun()
+        except Exception as e:
+            st.error(f"Authentication Service Unavailable: {e}")
+    else:
+        st.warning("⚠️ Cloud Sync is currently disabled (Supabase keys missing)")
+    
     st.divider()
+    
     if st.button("🚀 Continue as Guest", use_container_width=True, type="primary"):
         st.session_state.user = {
             "id": f"guest_{uuid.uuid4().hex[:8]}",
@@ -185,6 +187,9 @@ def _offer_guest_mode():
             "is_guest": True,
         }
         st.rerun()
+    
+    st.markdown("<p style='text-align:center; color:var(--text-dim); font-size:11px; margin-top:20px;'>Guest mode saves history to local session only</p>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def _load_user_history():
@@ -285,8 +290,8 @@ def render_sidebar():
 
         st.divider()
         st.markdown(
-            '<div style="font-size:10px;color:#4A5568;text-align:center;">'
-            '🔒 Your data stays local · ChromaDB persisted</div>',
+            '<div style="font-size:10px;color:var(--text-dim);text-align:center;">'
+            '🔒 Secure connection · FAISS persisted</div>',
             unsafe_allow_html=True,
         )
 
@@ -299,6 +304,15 @@ def render_sidebar():
             st.progress(min(mem_mb/1024, 1.0))
             
             st.caption(f"Vector DB: `FAISS (cpu)`")
+            
+            # Database Diagnostics
+            from utils.db import check_db_health
+            db_h = check_db_health()
+            if db_h["status"] == "ok":
+                st.caption("Database: `✅ Connected`")
+            else:
+                st.caption(f"Database: `❌ {db_h['message'][:24]}`")
+                
             st.caption(f"Root: `{ROOT.name}`")
             try:
                 faiss_p = Path(FAISS_DIR)
@@ -451,7 +465,8 @@ def handle_user_input(prompt: str, attachments: list):
     })
     sid = st.session_state.current_session_id
     if sid and not is_guest:
-        save_message(sid, "user", prompt)
+        if not save_message(sid, "user", prompt):
+            st.toast("⚠️ Failed to sync history to cloud", icon="☁️")
 
     # Render user bubble
     with st.chat_message("user", avatar="👤"):
@@ -498,7 +513,8 @@ def handle_user_input(prompt: str, attachments: list):
         "sources": sources, "ts": ts,
     })
     if sid and not is_guest:
-        save_message(sid, "assistant", response, sources)
+        if not save_message(sid, "assistant", response, sources):
+            st.toast("⚠️ Failed to sync history to cloud", icon="☁️")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -529,14 +545,15 @@ def main():
     else:
         render_messages()
 
-    # Bottom bar: [+] | chat input
-    col_plus, col_input = st.columns([1, 14])
-    with col_plus:
-        render_plus_popover()
-    with col_input:
-        prompt = st.chat_input(
-            f"Ask me anything about {st.session_state.country} taxes…"
-        )
+    # Blended (+) Button Overlay
+    st.markdown("<div class='blended-plus-container'>", unsafe_allow_html=True)
+    render_plus_popover()
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Chat input
+    prompt = st.chat_input(
+        f"Ask me anything about {st.session_state.country} taxes…"
+    )
 
     if prompt:
         attachments = [d["name"] for d in st.session_state.uploaded_docs]
