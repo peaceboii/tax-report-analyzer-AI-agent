@@ -2,65 +2,50 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* ─── Global Variables (Dark theme by default) ─────────────────────────── */
+/* ─── Global Variables ─────────────────────────────────────────────────── */
 :root {
-  /* Colors */
   --accent: #4F8EF7;
   --accent-glow: rgba(79,142,247,0.20);
   --accent-secondary: #6C63FF;
   --success: #22C55E;
-  --warning: #F59E0B;
-  --danger: #EF4444;
   
-  /* Backgrounds */
   --bg-main: #0E1117;
   --bg-sidebar: #0D1320;
   --bg-card: #111827;
-  --bg-bubble-ai: #131B2C;
   --bg-input: #161B2A;
-  --bg-popover: #111827;
   
-  /* Text */
   --text-primary: #E2E8F0;
   --text-secondary: #CBD5E0;
   --text-muted: #718096;
   --text-dim: #4A5568;
   
-  /* Layout */
   --border-subtle: #1E2A40;
   --border-strong: #2D3748;
-  --radius: 14px;
-  --radius-sm: 8px;
 }
 
-/* ─── Global ─────────────────────────────────────────────────────────────── */
-html, body, .stApp, [data-testid="stAppViewContainer"] {
+/* ─── Global ────────────────────────────────────────────────────────────── */
+html, body, .stApp {
   font-family: 'Inter', sans-serif !important;
   background-color: var(--bg-main) !important;
 }
 
-/* Hide Streamlit components */
 #MainMenu { visibility: hidden !important; }
 [data-testid="stToolbar"] { display: none !important; }
 footer { visibility: hidden !important; }
 
-/* ─── Sidebar ────────────────────────────────────────────────────────────── */
+/* ─── Sidebar & History ────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {
   background: var(--bg-sidebar) !important;
   border-right: 1px solid var(--border-subtle) !important;
-  backdrop-filter: blur(10px);
 }
 
-[data-testid="stSidebar"] * {
-  color: var(--text-secondary) !important;
-}
-
+/* History Pills */
 .history-item {
   background: rgba(255,255,255,0.03) !important;
   border: 1px solid var(--border-subtle) !important;
-  border-radius: 10px;
-  padding: 8px 12px;
-  margin-bottom: 6px;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
   transition: all 0.2s ease;
 }
 
@@ -69,138 +54,58 @@ footer { visibility: hidden !important; }
   border-color: var(--accent) !important;
 }
 
-.doc-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: rgba(79,142,247,0.12);
-  border: 1px solid rgba(79,142,247,0.3);
-  color: var(--accent) !important;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  margin: 3px 2px;
+/* ─── Integrated Chat Input (+) DESIGN ───────────────────────────────────── */
+
+/* Parent Container at the bottom */
+.bottom-bar-container {
+  position: relative !important;
+  width: 100%;
 }
 
-/* ─── Typography overrides ──────────────────────────────────────────────── */
-h1, h2, h3, h4, h5, h6, .stMarkdown p {
-  color: var(--text-primary) !important;
-}
-
-/* ─── Main chat area ─────────────────────────────────────────────────────── */
-[data-testid="stMain"] {
-  background: var(--bg-main) !important;
-}
-
-/* Chat message containers */
-[data-testid="stChatMessage"] {
-  border-radius: var(--radius) !important;
-  margin-bottom: 12px !important;
-  padding: 12px 16px !important;
-  animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ─── Integrated Chat Input (+) Design ────────────────────────────────────── */
-
-/* Move the (+) button PHYSICALLY inside the input area */
-.blended-plus-container {
-  position: fixed;
-  bottom: 36px;
-  left: calc(21rem + 26px); /* Align with the start of the chat-input area */
-  z-index: 2000;
-  transform: translateX(0); /* Left align inside the box */
-  transition: all 0.3s ease;
-}
-
+/* The actual Streamlit Chat Input Wrapper */
 [data-testid="stChatInput"] {
+  padding-left: 56px !important; /* MAKE ROOM FOR ICON */
+  border-radius: 28px !important;
   background: var(--bg-input) !important;
   border: 1.5px solid var(--border-strong) !important;
-  border-radius: 24px !important; /* Professional pill shape */
-  padding-left: 54px !important; /* PROTECT SPACE FOR THE (+) ICON */
-  backdrop-filter: blur(12px);
-  margin-bottom: 4px !important;
+  transition: all 0.2s ease;
 }
 
-[data-testid="stChatInput"]:focus-within {
-  border-color: var(--accent) !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 0 3px var(--accent-glow) !important;
+/* The Integrated (+) Icon */
+.blended-plus-container {
+  position: absolute !important;
+  bottom: 8px; /* Alignment with input text */
+  left: 10px;  /* Fixed offset inside the box */
+  z-index: 10;
 }
 
-/* Clear the popover's internal button styling to make it 'melt' into the input */
+/* Melt the popover button into the bar */
 .blended-plus-container [data-testid="stPopover"] > button {
   background: transparent !important;
   border: none !important;
   color: var(--accent) !important;
-  font-size: 20px !important;
   padding: 0 !important;
   width: 40px !important;
   height: 40px !important;
   box-shadow: none !important;
 }
 
-@media (max-width: 1200px) {
-  .blended-plus-container { left: 90px; }
-}
+/* ─── Light Mode Overrides (Nuclear Strategy) ─────────────────────────── */
+/* These will be overridden by light.css but I'm putting safety here too */
 
-@media (max-width: 768px) {
-  .blended-plus-container { 
-    left: 20px;
-    bottom: 32px;
-  }
-}
-
-/* ─── Hero / Welcome Improvements ────────────────────────────────────────── */
+/* ─── Premium UI Elements ───────────────────────────────────────────────── */
 .welcome-container {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 20px;
-  background: rgba(79,142,247, 0.05);
+  border-radius: 24px;
+  background: rgba(79,142,247, 0.04);
   padding: 40px !important;
   border: 1px solid var(--border-subtle);
-  margin-top: 20px;
+  backdrop-filter: blur(12px);
 }
 
 .welcome-container h2 {
-  font-size: 32px !important;
+  font-size: 34px !important;
   font-weight: 800 !important;
-  letter-spacing: -0.025em;
-  margin-bottom: 12px !important;
   background: linear-gradient(135deg, var(--text-primary), var(--accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
-/* ─── Buttons ────────────────────────────────────────────────────────────── */
-.stButton > button {
-  border-radius: 10px !important;
-  font-weight: 600 !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.stButton > button[kind="primary"] {
-  background: linear-gradient(135deg, var(--accent), var(--accent-secondary)) !important;
-  border: none !important;
-  color: white !important;
-  box-shadow: 0 4px 12px rgba(79,142,247,0.25) !important;
-}
-
-/* ─── Metrics & Pills ────────────────────────────────────────────────────── */
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  border: 1px solid transparent;
-}
-
-.pill-blue { background: rgba(79,142,247,0.12); border-color: rgba(79,142,247,0.3); color: var(--accent); }
-.pill-green { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: var(--success); }

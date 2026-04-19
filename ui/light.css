@@ -1,12 +1,11 @@
-/* ui/light.css — AI Tax Assistant High-Contrast LIGHT THEME Perfection */
+/* ui/light.css — AI Tax Assistant HIGH-CONTRAST LIGHT THEME */
 
 :root {
-  /* Hard-Contrast Colors for Light Theme */
+  /* HARD LIGHT COLORS */
   --accent: #2563EB;
-  --accent-glow: rgba(37,99,235,0.12);
+  --accent-glow: rgba(37,99,235,0.15);
   --accent-secondary: #4F46E5;
   
-  /* Backgrounds */
   --bg-main: #FFFFFF;
   --bg-sidebar: #F1F5F9;
   --bg-card: #FFFFFF;
@@ -14,117 +13,122 @@
   --bg-input: #FFFFFF;
   --bg-popover: #FFFFFF;
   
-  /* Text - DEEP BLACKS */
+  /* DEEP BLACK TEXT */
   --text-primary: #0F172A;
   --text-secondary: #0F172A;
   --text-muted: #334155;
-  --text-dim: #64748B;
+  --text-dim: #475569;
   
-  /* Borders */
-  --border-subtle: #CBD5E0;
-  --border-strong: #94A3B8;
+  --border-subtle: #94A3B8;
+  --border-strong: #475569;
 }
 
-/* ─── Global Contrast Overrides ────────────────────────────────────────── */
-[data-testid="stSidebar"], [data-testid="stMain"] {
+/* ─── Global Overrides ─────────────────────────────────────────────────── */
+[data-testid="stAppViewContainer"], [data-testid="stSidebar"], [data-testid="stMain"] {
   color: var(--text-primary) !important;
 }
 
-/* Force dark text for all common Markdown elements */
-[data-testid="stMarkdownContainer"] * {
+/* Force dark text for all sub-components */
+[data-testid*="stMarkdownContainer"] * {
   color: var(--text-primary) !important;
 }
 
-[data-testid="stSidebar"] * {
-  color: var(--text-primary) !important;
+/* ─── Sidebar Polish (Nuclear Fix) ───────────────────────────────────────── */
+[data-testid="stSidebar"] {
+  background: var(--bg-sidebar) !important;
+  border-right: 2px solid var(--border-subtle) !important;
 }
 
-/* ─── Sidebar Polish ────────────────────────────────────────────────────── */
+/* History Items Fix (The blue pills in screenshot) */
 .history-item {
   background: white !important;
-  border-color: var(--border-subtle) !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1.5px solid var(--border-subtle) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
 }
 
 .history-item:hover {
   background: white !important;
   border-color: var(--accent) !important;
-  box-shadow: 0 4px 12px rgba(37,99,235,0.1);
 }
 
 .history-item .hist-query {
   color: var(--text-primary) !important;
+  font-weight: 500 !important;
 }
 
-/* Sidebar Captions (Auth, System info) */
-.stCaption, [data-testid="stCaptionContainer"] {
+/* Sidebar Captions (Tech details) */
+[data-testid="stSidebar"] stCaption, 
+[data-testid="stSidebar"] .stCaptionContainer p {
   color: var(--text-muted) !important;
+  font-weight: 600 !important;
 }
 
-/* ─── Metrics & Status ──────────────────────────────────────────────────── */
+/* ─── Metrics & RAM meters (The grey text in screenshot) ─────────────────── */
 [data-testid="stMetricValue"] {
   color: var(--text-primary) !important;
-  font-weight: 700 !important;
+  font-weight: 800 !important;
 }
 
 [data-testid="stMetricLabel"] {
   color: var(--text-muted) !important;
+  font-weight: 600 !important;
 }
 
-/* System Status Expander */
+/* Progress bars / RAM Meters */
+[data-testid="stProgress"] > div > div {
+  background-color: var(--accent) !important;
+}
+
 [data-testid="stExpander"] {
   background: white !important;
   border: 1px solid var(--border-subtle) !important;
-  color: var(--text-primary) !important;
 }
 
-/* ─── Table Visibility (Crucial for Light Mode) ─────────────────────────── */
-[data-testid="stMarkdownContainer"] table {
-  border: 1px solid var(--border-subtle) !important;
-}
-
-[data-testid="stMarkdownContainer"] th {
-  background-color: #F1F5F9 !important;
-  color: var(--text-primary) !important;
-  border-bottom: 2px solid var(--border-strong) !important;
-}
-
-[data-testid="stMarkdownContainer"] td {
-  background-color: white !important;
-  color: var(--text-primary) !important;
-  border: 1px solid var(--border-subtle) !important;
-}
-
-/* ─── Chat Interface Integration ─────────────────────────────────────────── */
+/* ─── Chat & Integrated Input ────────────────────────────────────────────── */
 [data-testid="stChatInput"] {
   background: white !important;
   border: 2px solid var(--border-strong) !important;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06) !important;
 }
 
 [data-testid="stChatInputTextArea"] textarea {
   color: var(--text-primary) !important;
 }
 
-/* Popover 'Melt' Design in Light Mode */
+/* Popover inside Light Mode */
+[data-testid="stPopoverBody"] {
+  background: white !important;
+  border: 2px solid var(--border-strong) !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2) !important;
+}
+
 .blended-plus-container [data-testid="stPopover"] > button {
   color: var(--accent) !important;
 }
 
-/* Popover Content Box */
-[data-testid="stPopoverBody"] {
-  background-color: white !important;
-  border: 1px solid var(--border-strong) !important;
-  box-shadow: 0 15px 45px rgba(0,0,0,0.15) !important;
+/* ─── Tables ─────────────────────────────────────────────────────────────── */
+[data-testid="stMarkdownContainer"] table {
+  border: 2px solid var(--border-subtle) !important;
 }
 
-/* ─── Chat Bubbles ───────────────────────────────────────────────────────── */
+[data-testid="stMarkdownContainer"] th {
+  background: #F1F5F9 !important;
+  color: var(--text-primary) !important;
+  border-bottom: 2px solid var(--border-strong) !important;
+}
+
+[data-testid="stMarkdownContainer"] td {
+  background: white !important;
+  color: var(--text-primary) !important;
+}
+
+/* ─── Chat Bubbles (Contrast Fix) ────────────────────────────────────────── */
 div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-  background: var(--bg-bubble-ai) !important;
-  border: 1px solid var(--border-subtle) !important;
+  background: #F8FAFC !important;
+  border: 1.5px solid var(--border-subtle) !important;
 }
 
 [data-testid="stChatMessage"][data-testid*="user"] {
-  background: linear-gradient(135deg, #EFF6FF 0%, #F5F3FF 100%) !important;
-  border: 1px solid var(--accent) !important;
+  background: #EFF6FF !important;
+  border: 1.5px solid var(--accent) !important;
 }
