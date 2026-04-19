@@ -1,47 +1,21 @@
 from __future__ import annotations
 
-# ── Environment Monkeypatches ────────────────────────────────────────────────
-import sys
-
-# 1. SQLite: Fixes ChromaDB requirement for >= 3.35.0 on Streamlit Cloud
-try:
-    import pysqlite3
-    sys.modules["sqlite3"] = pysqlite3
-except ImportError:
-    pass
-
-# 2. NumPy: Fixes ChromaDB 0.4.x compatibility with NumPy 2.0+
-try:
-    import numpy as np
-    # Restore legacy attributes removed in NumPy 2.0
-    if not hasattr(np, "int_"):
-        np.int_ = np.intp if hasattr(np, "intp") else int
-    if not hasattr(np, "float_"):
-        np.float_ = float
-    if not hasattr(np, "bool_"):
-        np.bool_ = bool
-    if not hasattr(np, "unicode_"):
-        np.unicode_ = str
-except ImportError:
-    pass
-# ─────────────────────────────────────────────────────────────────────────────
-
-"""
-app/main.py — AI Tax Assistant (Streamlit)
-...
-"""
-
-
-import hashlib
 import os
 import sys
-import uuid
-from datetime import datetime
 from pathlib import Path
 
+# Fix path before any local imports
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
+# Apply environment patches (SQLite, NumPy) before anything else
+import utils.env_patch
+import chromadb
+import gc
+import hashlib
+import uuid
+from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv(ROOT / ".env")
 

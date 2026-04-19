@@ -8,12 +8,20 @@ Embeddings via Google Generative AI.
 from __future__ import annotations
 
 import os
-from pathlib import Path
-from typing import Optional
-
-import chromadb
-from chromadb.config import Settings
+import streamlit as st
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_core.documents import Document
+from chromadb.config import Settings
+from pathlib import Path
+from typing import List, Optional
+
+# Ensure environment is patched before ChromaDB loads
+try:
+    import utils.env_patch
+except ImportError:
+    pass
+    
+import chromadb
 
 _EMBED_MODEL = "models/embedding-001"
 
