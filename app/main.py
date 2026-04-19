@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 app/main.py — AI Tax Assistant (Streamlit)
 ───────────────────────────────────────────
@@ -21,7 +23,6 @@ except ImportError:
     pass  # Running locally with a modern SQLite — no patch needed
 # ─────────────────────────────────────────────────────────────────────────────
 
-from __future__ import annotations
 
 import hashlib
 import os
