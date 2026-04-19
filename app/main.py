@@ -1,23 +1,12 @@
 from __future__ import annotations
 
-import sys
 import os
+import sys
+import gc
+import hashlib
+import uuid
+from datetime import datetime
 from pathlib import Path
-
-# ── FORCED ENVIRONMENT FIXES (MUST BE FIRST) ────────────────────────────────
-try:
-    # 1. SQLite Patch
-    import pysqlite3
-    sys.modules["sqlite3"] = pysqlite3
-    
-    # 2. NumPy Patch
-    import numpy as np
-    for attr, val in [("int_", int), ("float_", float), ("bool_", bool), ("unicode_", str)]:
-        if not hasattr(np, attr):
-            setattr(np, attr, val)
-except Exception as e:
-    print(f"BOOTSTRAP WARNING: {e}")
-# ─────────────────────────────────────────────────────────────────────────────
 
 # Fix path
 ROOT = Path(__file__).resolve().parent.parent
@@ -25,13 +14,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import streamlit as st
-st.toast("🚀 App Booting: V4.1 Standard")
+st.toast("🚀 App Booting: FAISS V1.0")
 
-import gc
-import hashlib
-import uuid
-import chromadb
-from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv(ROOT / ".env")
 
@@ -58,7 +42,7 @@ from utils.db import (
 # ── Constants ────────────────────────────────────────────────────────────────
 COUNTRIES = ["India", "Australia"]
 COUNTRY_FLAGS = {"India": "🇮🇳", "Australia": "🇦🇺"}
-CHROMA_DIR = str(ROOT / os.getenv("CHROMA_PERSIST_DIR", "data/chroma_db").lstrip("./"))
+FAISS_DIR = str(ROOT / "data" / "faiss_index")
 
 SUGGESTIONS = [
     "💡 Best tax-saving options under Section 80C?",
@@ -307,14 +291,19 @@ def render_sidebar():
         )
 
         # System Status (Debug info)
-        with st.expander("🛠️ System Status", expanded=False):
-            import sqlite3
-            st.caption(f"SQLite: `{sqlite3.sqlite_version}`")
+        with st.expander("🛠️ System Status", expanded=True):
+            import psutil
+            process = psutil.Process(os.getpid())
+            mem_mb = process.memory_info().rss / (1024 * 1024)
+            st.caption(f"RAM: `{mem_mb:.1f} MB` / 1024 MB")
+            st.progress(min(mem_mb/1024, 1.0))
+            
+            st.caption(f"Vector DB: `FAISS (cpu)`")
             st.caption(f"Root: `{ROOT.name}`")
-            st.caption(f"Persist: `{Path(CHROMA_DIR).name}`")
             try:
-                test_file = Path(CHROMA_DIR) / ".write_test"
-                test_file.parent.mkdir(parents=True, exist_ok=True)
+                faiss_p = Path(FAISS_DIR)
+                faiss_p.mkdir(parents=True, exist_ok=True)
+                test_file = faiss_p / ".write_test"
                 test_file.write_text("ok")
                 test_file.unlink()
                 st.caption("Disk: `✅ Writable`")
