@@ -36,7 +36,7 @@ from utils.chunker import chunk_text
 from utils.parsers import extract_file
 from utils.db import (
     get_supabase, fetch_chat_sessions, fetch_messages,
-    create_chat_session, save_message,
+    create_chat_session, save_message, check_db_health
 )
 
 # ── Constants ────────────────────────────────────────────────────────────────
@@ -306,7 +306,6 @@ def render_sidebar():
             st.caption(f"Vector DB: `FAISS (cpu)`")
             
             # Database Diagnostics
-            from utils.db import check_db_health
             db_h = check_db_health()
             if db_h["status"] == "ok":
                 st.caption("Database: `✅ Connected`")
