@@ -15,10 +15,23 @@ Features:
 import gc
 import sys
 
-# ── SQLite monkeypatch — MUST be first (fixes ChromaDB on Streamlit Cloud) ───
+# ── SQLite monkeypatch ───────────────────────────────────────────────────────
 try:
     import pysqlite3
     sys.modules["sqlite3"] = pysqlite3
+except ImportError:
+    pass
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── NumPy monkeypatch (fixes ChromaDB < 0.5.x on NumPy 2.0+) ──────────────────
+try:
+    import numpy as np
+    if not hasattr(np, "int_"):
+        np.int_ = np.intptr if hasattr(np, "intptr") else int
+    if not hasattr(np, "float_"):
+        np.float_ = float
+    if not hasattr(np, "bool_"):
+        np.bool_ = bool
 except ImportError:
     pass
 # ─────────────────────────────────────────────────────────────────────────────
