@@ -1,20 +1,36 @@
 from __future__ import annotations
 
-import os
 import sys
+import os
 from pathlib import Path
 
-# Fix path before any local imports
+# ── FORCED ENVIRONMENT FIXES (MUST BE FIRST) ────────────────────────────────
+try:
+    # 1. SQLite Patch
+    import pysqlite3
+    sys.modules["sqlite3"] = pysqlite3
+    
+    # 2. NumPy Patch
+    import numpy as np
+    for attr, val in [("int_", int), ("float_", float), ("bool_", bool), ("unicode_", str)]:
+        if not hasattr(np, attr):
+            setattr(np, attr, val)
+except Exception as e:
+    print(f"BOOTSTRAP WARNING: {e}")
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Fix path
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-# Apply environment patches (SQLite, NumPy) before anything else
-import utils.env_patch
-import chromadb
+import streamlit as st
+st.toast("🚀 App Booting: V4.1 Standard")
+
 import gc
 import hashlib
 import uuid
+import chromadb
 from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv(ROOT / ".env")
