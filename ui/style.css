@@ -121,13 +121,30 @@ div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"
 .blended-plus-container {
   position: fixed;
   bottom: 34px;
-  left: 31%; /* Adjust based on sidebar width if needed */
+  left: calc(31% + 30px); /* Better centering relative to main chat area */
   z-index: 1000;
   transform: translateX(-50%);
 }
 
+@media (max-width: 1200px) {
+  .blended-plus-container { left: calc(50% + 50px); }
+}
+
 @media (max-width: 768px) {
   .blended-plus-container { left: 50px; }
+}
+
+/* ─── Hero / Welcome Improvements ────────────────────────────────────────── */
+.welcome-container h2 {
+  font-size: 36px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px !important;
+}
+
+.welcome-container p {
+  font-size: 16px !important;
+  color: var(--text-muted) !important;
 }
 
 /* ─── Login Card styling ────────────────────────────────────────────────── */

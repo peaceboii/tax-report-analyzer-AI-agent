@@ -310,7 +310,7 @@ def render_sidebar():
             if db_h["status"] == "ok":
                 st.caption("Database: `✅ Connected`")
             else:
-                st.caption(f"Database: `❌ {db_h['message'][:24]}`")
+                st.caption(f"Database: `❌ {db_h['message']}`")
                 
             st.caption(f"Root: `{ROOT.name}`")
             try:
