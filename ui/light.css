@@ -1,55 +1,37 @@
-/* ui/light.css — AI Tax Assistant High-Contrast Light Theme Overrides */
+/* ui/light.css — AI Tax Assistant High-Contrast LIGHT THEME Perfection */
 
 :root {
-  /* Colors */
+  /* Hard-Contrast Colors for Light Theme */
   --accent: #2563EB;
-  --accent-glow: rgba(37,99,235,0.15);
+  --accent-glow: rgba(37,99,235,0.12);
   --accent-secondary: #4F46E5;
   
   /* Backgrounds */
   --bg-main: #FFFFFF;
-  --bg-sidebar: #F8FAFC;
+  --bg-sidebar: #F1F5F9;
   --bg-card: #FFFFFF;
-  --bg-bubble-ai: #F1F5F9;
+  --bg-bubble-ai: #F8FAFC;
   --bg-input: #FFFFFF;
   --bg-popover: #FFFFFF;
   
-  /* Text - HARD CONTRAST */
+  /* Text - DEEP BLACKS */
   --text-primary: #0F172A;
   --text-secondary: #0F172A;
   --text-muted: #334155;
   --text-dim: #64748B;
   
-  /* Layout */
+  /* Borders */
   --border-subtle: #CBD5E0;
   --border-strong: #94A3B8;
 }
 
-/* ─── Global Override for Total Content Visibility ───────────────────── */
+/* ─── Global Contrast Overrides ────────────────────────────────────────── */
 [data-testid="stSidebar"], [data-testid="stMain"] {
   color: var(--text-primary) !important;
 }
 
-/* Force all markdown elements to be visible */
+/* Force dark text for all common Markdown elements */
 [data-testid="stMarkdownContainer"] * {
-  color: var(--text-primary) !important;
-}
-
-/* Table visibility fix */
-[data-testid="stMarkdownContainer"] table,
-[data-testid="stMarkdownContainer"] th,
-[data-testid="stMarkdownContainer"] td {
-  border: 1px solid var(--border-subtle) !important;
-  color: var(--text-primary) !important;
-}
-
-[data-testid="stMarkdownContainer"] th {
-  background-color: #F1F5F9 !important;
-  font-weight: 700 !important;
-}
-
-/* Metric and Sidebar overrides */
-[data-testid="stMetricValue"], [data-testid="stMetricLabel"] {
   color: var(--text-primary) !important;
 }
 
@@ -57,51 +39,92 @@
   color: var(--text-primary) !important;
 }
 
-/* Login card light mode adjustment */
-.login-card {
+/* ─── Sidebar Polish ────────────────────────────────────────────────────── */
+.history-item {
   background: white !important;
-  border: 1px solid var(--border-subtle) !important;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.08) !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-/* Input area overrides */
+.history-item:hover {
+  background: white !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 4px 12px rgba(37,99,235,0.1);
+}
+
+.history-item .hist-query {
+  color: var(--text-primary) !important;
+}
+
+/* Sidebar Captions (Auth, System info) */
+.stCaption, [data-testid="stCaptionContainer"] {
+  color: var(--text-muted) !important;
+}
+
+/* ─── Metrics & Status ──────────────────────────────────────────────────── */
+[data-testid="stMetricValue"] {
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+}
+
+[data-testid="stMetricLabel"] {
+  color: var(--text-muted) !important;
+}
+
+/* System Status Expander */
+[data-testid="stExpander"] {
+  background: white !important;
+  border: 1px solid var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ─── Table Visibility (Crucial for Light Mode) ─────────────────────────── */
+[data-testid="stMarkdownContainer"] table {
+  border: 1px solid var(--border-subtle) !important;
+}
+
+[data-testid="stMarkdownContainer"] th {
+  background-color: #F1F5F9 !important;
+  color: var(--text-primary) !important;
+  border-bottom: 2px solid var(--border-strong) !important;
+}
+
+[data-testid="stMarkdownContainer"] td {
+  background-color: white !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+/* ─── Chat Interface Integration ─────────────────────────────────────────── */
 [data-testid="stChatInput"] {
   background: white !important;
-  border: 1.5px solid var(--border-strong) !important;
+  border: 2px solid var(--border-strong) !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
 }
 
 [data-testid="stChatInputTextArea"] textarea {
   color: var(--text-primary) !important;
 }
 
-/* Assistant Bubble - Soft shading but dark text */
+/* Popover 'Melt' Design in Light Mode */
+.blended-plus-container [data-testid="stPopover"] > button {
+  color: var(--accent) !important;
+}
+
+/* Popover Content Box */
+[data-testid="stPopoverBody"] {
+  background-color: white !important;
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: 0 15px 45px rgba(0,0,0,0.15) !important;
+}
+
+/* ─── Chat Bubbles ───────────────────────────────────────────────────────── */
 div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
   background: var(--bg-bubble-ai) !important;
   border: 1px solid var(--border-subtle) !important;
 }
 
-/* User Bubble - Keep blue but darken border */
 [data-testid="stChatMessage"][data-testid*="user"] {
+  background: linear-gradient(135deg, #EFF6FF 0%, #F5F3FF 100%) !important;
   border: 1px solid var(--accent) !important;
-}
-
-/* Force Popover Body to be white in light mode */
-[data-testid="stPopoverBody"], 
-div[data-testid="stPopoverBody"],
-.stPopover div[data-testid="stPopoverBody"] {
-  background-color: white !important;
-  border: 1px solid var(--border-subtle) !important;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
-}
-
-/* Ensure the popover button also respects light mode */
-[data-testid="stPopover"] > button {
-  background-color: white !important;
-  color: var(--text-primary) !important;
-  border: 1.5px solid var(--border-strong) !important;
-}
-
-/* Fix for nested elements in popover */
-[data-testid="stPopoverBody"] * {
-  color: var(--text-primary) !important;
 }

@@ -48,10 +48,25 @@ footer { visibility: hidden !important; }
 [data-testid="stSidebar"] {
   background: var(--bg-sidebar) !important;
   border-right: 1px solid var(--border-subtle) !important;
+  backdrop-filter: blur(10px);
 }
 
 [data-testid="stSidebar"] * {
   color: var(--text-secondary) !important;
+}
+
+.history-item {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  transition: all 0.2s ease;
+}
+
+.history-item:hover {
+  background: rgba(79,142,247,0.08) !important;
+  border-color: var(--accent) !important;
 }
 
 .doc-chip {
@@ -81,9 +96,9 @@ h1, h2, h3, h4, h5, h6, .stMarkdown p {
 /* Chat message containers */
 [data-testid="stChatMessage"] {
   border-radius: var(--radius) !important;
-  margin-bottom: 8px !important;
-  padding: 8px 12px !important;
-  animation: fadeIn 0.3s ease-out;
+  margin-bottom: 12px !important;
+  padding: 12px 16px !important;
+  animation: fadeIn 0.4s ease-out;
 }
 
 @keyframes fadeIn {
@@ -91,58 +106,52 @@ h1, h2, h3, h4, h5, h6, .stMarkdown p {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* User messages */
-[data-testid="stChatMessage"][data-testid*="user"],
-div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-  background: linear-gradient(135deg, rgba(79,142,247,0.1) 0%, rgba(108,99,255,0.1) 100%) !important;
-  border: 1px solid rgba(79,142,247,0.2) !important;
+/* ─── Integrated Chat Input (+) Design ────────────────────────────────────── */
+
+/* Move the (+) button PHYSICALLY inside the input area */
+.blended-plus-container {
+  position: fixed;
+  bottom: 36px;
+  left: calc(21rem + 26px); /* Align with the start of the chat-input area */
+  z-index: 2000;
+  transform: translateX(0); /* Left align inside the box */
+  transition: all 0.3s ease;
 }
 
-/* AI messages */
-div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-  background: var(--bg-bubble-ai) !important;
-  border: 1px solid var(--border-subtle) !important;
-}
-
-/* ─── Chat Input "Blended" Styling ────────────────────────────────────────── */
 [data-testid="stChatInput"] {
   background: var(--bg-input) !important;
   border: 1.5px solid var(--border-strong) !important;
-  border-radius: 14px !important;
-  padding-left: 45px !important; /* Make room for the blended (+) button */
+  border-radius: 24px !important; /* Professional pill shape */
+  padding-left: 54px !important; /* PROTECT SPACE FOR THE (+) ICON */
+  backdrop-filter: blur(12px);
+  margin-bottom: 4px !important;
 }
 
 [data-testid="stChatInput"]:focus-within {
   border-color: var(--accent) !important;
-  box-shadow: 0 0 0 3px var(--accent-glow) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 0 3px var(--accent-glow) !important;
 }
 
-/* ─── Plus Button Overlay (The Blend) ─────────────────────────────────── */
-.blended-plus-container {
-  position: fixed;
-  bottom: 34px;
-  left: calc(21rem + 20px); /* Relative to typical sidebar width */
-  z-index: 1000;
-  transform: translateX(-50%);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Clear the popover's internal button styling to make it 'melt' into the input */
+.blended-plus-container [data-testid="stPopover"] > button {
+  background: transparent !important;
+  border: none !important;
+  color: var(--accent) !important;
+  font-size: 20px !important;
+  padding: 0 !important;
+  width: 40px !important;
+  height: 40px !important;
+  box-shadow: none !important;
 }
 
 @media (max-width: 1200px) {
-  .blended-plus-container { left: 80px; }
+  .blended-plus-container { left: 90px; }
 }
 
 @media (max-width: 768px) {
-  /* On mobile, un-blend and stack neatly above input */
   .blended-plus-container { 
-    position: relative;
-    bottom: auto;
-    left: auto;
-    transform: none;
-    margin-bottom: 10px;
-    padding-left: 10px;
-  }
-  [data-testid="stChatInput"] {
-    padding-left: 12px !important;
+    left: 20px;
+    bottom: 32px;
   }
 }
 
@@ -151,8 +160,10 @@ div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 20px;
-  background: rgba(var(--accent-glow), 0.03);
+  background: rgba(79,142,247, 0.05);
   padding: 40px !important;
+  border: 1px solid var(--border-subtle);
+  margin-top: 20px;
 }
 
 .welcome-container h2 {
@@ -163,22 +174,6 @@ div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"
   background: linear-gradient(135deg, var(--text-primary), var(--accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-  font-size: 16px !important;
-  color: var(--text-muted) !important;
-}
-
-/* ─── Login Card styling ────────────────────────────────────────────────── */
-.login-card {
-  background: rgba(17, 24, 39, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  max-width: 480px;
-  margin: 0 auto;
 }
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
@@ -195,18 +190,7 @@ div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"
   box-shadow: 0 4px 12px rgba(79,142,247,0.25) !important;
 }
 
-.stButton > button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(79,142,247,0.35) !important;
-}
-
-/* ─── Selectbox / Inputs ────────────────────────────────────────────────── */
-div[data-baseweb="select"] > div {
-  background-color: var(--bg-sidebar) !important;
-  border-color: var(--border-strong) !important;
-}
-
-/* ─── Sidebar history pills ──────────────────────────────────────────────── */
+/* ─── Metrics & Pills ────────────────────────────────────────────────────── */
 .pill {
   display: inline-flex;
   align-items: center;
@@ -215,12 +199,8 @@ div[data-baseweb="select"] > div {
   border-radius: 20px;
   font-size: 11px;
   font-weight: 600;
+  border: 1px solid transparent;
 }
 
-.pill-blue { background: rgba(79,142,247,0.12); color: var(--accent); }
-.pill-green { background: rgba(34,197,94,0.12); color: var(--success); }
-
-/* ─── Metrics ────────────────────────────────────────────────────────────── */
-[data-testid="stMetricValue"] {
-  color: var(--text-primary) !important;
-}
+.pill-blue { background: rgba(79,142,247,0.12); border-color: rgba(79,142,247,0.3); color: var(--accent); }
+.pill-green { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: var(--success); }

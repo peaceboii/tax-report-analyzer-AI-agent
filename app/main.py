@@ -547,7 +547,10 @@ def main():
     else:
         render_messages()
 
-    # Blended (+) Button Overlay
+    # Bottom bar Area
+    st.markdown("<div class='bottom-bar-container'>", unsafe_allow_html=True)
+    
+    # Integrated (+) Button Overlay
     st.markdown("<div class='blended-plus-container'>", unsafe_allow_html=True)
     render_plus_popover()
     st.markdown("</div>", unsafe_allow_html=True)
@@ -556,6 +559,7 @@ def main():
     prompt = st.chat_input(
         f"Ask me anything about {st.session_state.country} taxes…"
     )
+    st.markdown("</div>", unsafe_allow_html=True)
 
     if prompt:
         attachments = [d["name"] for d in st.session_state.uploaded_docs]
