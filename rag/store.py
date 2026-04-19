@@ -22,17 +22,31 @@ class VectorStore:
     """Persistent ChromaDB-backed vector store with Google embedding support."""
 
     def __init__(self, persist_dir: str = "./data/chroma_db"):
-        Path(persist_dir).mkdir(parents=True, exist_ok=True)
+        try:
+            p = Path(persist_dir)
+            p.mkdir(parents=True, exist_ok=True)
+            
+            # Verify write access early
+            test_file = p / ".init_test"
+            test_file.write_text("ok")
+            test_file.unlink()
+            
+            # Persistent client – survives restarts
+            self._client = chromadb.PersistentClient(
+                path=str(p.absolute()),
+                settings=Settings(anonymized_telemetry=False),
+            )
 
-        # Persistent client – survives restarts
-        self._client = chromadb.PersistentClient(
-            path=persist_dir,
-            settings=Settings(anonymized_telemetry=False),
-        )
-
-        # Separate collections for document chunks vs chat memories
-        self._docs = self._client.get_or_create_collection("tax_documents")
-        self._memory = self._client.get_or_create_collection("chat_memory")
+            # Separate collections for document chunks vs chat memories
+            self._docs = self._client.get_or_create_collection("tax_documents")
+            self._memory = self._client.get_or_create_collection("chat_memory")
+            
+        except Exception as e:
+            # Fallback to ephemeral in-memory if persistent fails on some cloud platforms
+            print(f"ChromaDB Persistent Init Failed: {e}. Falling back to In-Memory.")
+            self._client = chromadb.Client(Settings(anonymized_telemetry=False))
+            self._docs = self._client.get_or_create_collection("tax_documents")
+            self._memory = self._client.get_or_create_collection("chat_memory")
 
         # Embedding function (lazy init)
         self._embedder: Optional[GoogleGenerativeAIEmbeddings] = None

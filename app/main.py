@@ -115,13 +115,20 @@ def get_store() -> VectorStore:
 # FILE PROCESSING
 # ══════════════════════════════════════════════════════════════════════════════
 def process_file(file_bytes: bytes, filename: str) -> str:
-    sid = hashlib.md5(file_bytes).hexdigest()[:12]
-    text = extract_file(file_bytes, filename)
-    chunks = chunk_text(text, chunk_size=800, overlap=120)
-    if chunks:
-        uid = st.session_state.user["id"] if st.session_state.user else "anon"
-        get_store().add_chunks(chunks, filename=filename, source_id=sid, user_id=uid)
-    return sid
+    try:
+        sid = hashlib.md5(file_bytes).hexdigest()[:12]
+        text = extract_file(file_bytes, filename)
+        if not text.strip():
+            raise ValueError("No text could be extracted from this file.")
+            
+        chunks = chunk_text(text, chunk_size=800, overlap=120)
+        if chunks:
+            uid = st.session_state.user["id"] if st.session_state.user else "anon"
+            store = get_store()
+            store.add_chunks(chunks, filename=filename, source_id=sid, user_id=uid)
+        return sid
+    except Exception as e:
+        raise RuntimeError(f"Processing failed: {str(e)}")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -285,6 +292,21 @@ def render_sidebar():
             '🔒 Your data stays local · ChromaDB persisted</div>',
             unsafe_allow_html=True,
         )
+
+        # System Status (Debug info)
+        with st.expander("🛠️ System Status", expanded=False):
+            import sqlite3
+            st.caption(f"SQLite: `{sqlite3.sqlite_version}`")
+            st.caption(f"Root: `{ROOT.name}`")
+            st.caption(f"Persist: `{Path(CHROMA_DIR).name}`")
+            try:
+                test_file = Path(CHROMA_DIR) / ".write_test"
+                test_file.parent.mkdir(parents=True, exist_ok=True)
+                test_file.write_text("ok")
+                test_file.unlink()
+                st.caption("Disk: `✅ Writable`")
+            except Exception as e:
+                st.caption(f"Disk: `❌ {str(e)[:20]}...`")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
