@@ -12,15 +12,15 @@ Features:
   • All messages persisted to Supabase Postgres
 """
 
+import gc
+import sys
+
 # ── SQLite monkeypatch — MUST be first (fixes ChromaDB on Streamlit Cloud) ───
-# Streamlit Cloud ships with a system SQLite too old for chromadb (needs >=3.35.0)
-# pysqlite3-binary bundles a modern SQLite and we swap it in at import time.
 try:
-    __import__("pysqlite3")
-    import sys
-    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+    import pysqlite3
+    sys.modules["sqlite3"] = pysqlite3
 except ImportError:
-    pass  # Running locally with a modern SQLite — no patch needed
+    pass
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -118,14 +118,29 @@ def process_file(file_bytes: bytes, filename: str) -> str:
     try:
         sid = hashlib.md5(file_bytes).hexdigest()[:12]
         text = extract_file(file_bytes, filename)
+        
+        # Free memory from original bytes
+        del file_bytes
+        gc.collect()
+        
         if not text.strip():
             raise ValueError("No text could be extracted from this file.")
             
         chunks = chunk_text(text, chunk_size=800, overlap=120)
+        
+        # Free memory from full text
+        del text
+        gc.collect()
+        
         if chunks:
             uid = st.session_state.user["id"] if st.session_state.user else "anon"
             store = get_store()
             store.add_chunks(chunks, filename=filename, source_id=sid, user_id=uid)
+            
+            # Free chunks
+            del chunks
+            gc.collect()
+            
         return sid
     except Exception as e:
         raise RuntimeError(f"Processing failed: {str(e)}")

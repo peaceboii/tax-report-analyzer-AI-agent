@@ -2,6 +2,7 @@
 gatherUsageStats = false
 
 [server]
+maxUploadSize = 25
 headless = true
 port = 8501
 enableCORS = false
