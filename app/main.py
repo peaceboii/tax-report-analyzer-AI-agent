@@ -90,7 +90,7 @@ def init_state():
 
 @st.cache_resource
 def get_store() -> VectorStore:
-    return VectorStore(persist_dir=CHROMA_DIR)
+    return VectorStore(persist_dir=FAISS_DIR)
 
 
 # ══════════════════════════════════════════════════════════════════════════════

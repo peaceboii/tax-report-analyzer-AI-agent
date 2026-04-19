@@ -1,12 +1,11 @@
 """
 utils/chunker.py
 ────────────────
-Text chunking utilities for RAG ingestion.
+Robust text chunking utilities for RAG ingestion.
+Fixed to avoid infinite loops on small inputs.
 """
 
 from __future__ import annotations
-
-from typing import Generator
 
 
 def chunk_text(
@@ -16,28 +15,55 @@ def chunk_text(
 ) -> list[str]:
     """
     Split `text` into overlapping chunks of `chunk_size` characters.
-    Tries to split at sentence boundaries where possible.
+    Ensures the loop always advances to avoid hangs.
     """
     text = text.strip()
     if not text:
         return []
 
+    # Safety check: overlap must be smaller than chunk_size
+    if overlap >= chunk_size:
+        overlap = chunk_size // 2
+
     chunks: list[str] = []
-    start = 0
     length = len(text)
+    start = 0
 
     while start < length:
+        # Calculate standard end
         end = min(start + chunk_size, length)
 
-        # Try to snap to a period/newline boundary near `end`
+        # Smart boundary snapping (only if we aren't at the very end)
         if end < length:
+            # Look for a boundary in the last 20% of the chunk
+            search_start = max(start + (chunk_size // 2), start)
             for boundary in ("\n\n", "\n", ". ", "! ", "? "):
-                snap = text.rfind(boundary, start, end)
-                if snap != -1 and snap > start + chunk_size // 2:
+                snap = text.rfind(boundary, search_start, end)
+                if snap != -1:
                     end = snap + len(boundary)
                     break
 
-        chunks.append(text[start:end].strip())
-        start = end - overlap
+        # Extract and store
+        chunk = text[start:end].strip()
+        if chunk:
+            chunks.append(chunk)
 
-    return [c for c in chunks if c]
+        # IMPORTANT: Ensure loop always advances
+        # If we reached the end, we're done
+        if end >= length:
+            break
+        
+        # Next start point (guaranteed to advance since overlap < chunk_size)
+        next_start = end - overlap
+        
+        # Final safety check to avoid infinite loop or backward jumping
+        if next_start <= start:
+            start = end
+        else:
+            start = next_start
+            
+        # Hard limit to prevent catastrophic hangs (max 50,000 chunks)
+        if len(chunks) > 50000:
+            break
+
+    return chunks
