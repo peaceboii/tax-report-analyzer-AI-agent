@@ -1,4 +1,4 @@
-/* ui/light.css — AI Tax Assistant Light Theme Overrides */
+/* ui/light.css — AI Tax Assistant High-Contrast Light Theme Overrides */
 
 :root {
   /* Colors */
@@ -7,65 +7,80 @@
   --accent-secondary: #4F46E5;
   
   /* Backgrounds */
-  --bg-main: #F8FAFC;
-  --bg-sidebar: #F1F5F9;
+  --bg-main: #FFFFFF;
+  --bg-sidebar: #F8FAFC;
   --bg-card: #FFFFFF;
-  --bg-bubble-ai: #FFFFFF;
+  --bg-bubble-ai: #F1F5F9;
   --bg-input: #FFFFFF;
   --bg-popover: #FFFFFF;
   
-  /* Text */
+  /* Text - HARD CONTRAST */
   --text-primary: #0F172A;
   --text-secondary: #0F172A;
-  --text-muted: #64748B;
-  --text-dim: #94A3B8;
+  --text-muted: #334155;
+  --text-dim: #64748B;
   
   /* Layout */
-  --border-subtle: #E2E8F0;
-  --border-strong: #CBD5E0;
+  --border-subtle: #CBD5E0;
+  --border-strong: #94A3B8;
 }
 
-/* Light Theme overrides for Streamlit internals */
-[data-testid="stSidebar"] {
-  background: var(--bg-sidebar) !important;
+/* ─── Global Override for Total Content Visibility ───────────────────── */
+[data-testid="stSidebar"], [data-testid="stMain"] {
+  color: var(--text-primary) !important;
+}
+
+/* Force all markdown elements to be visible */
+[data-testid="stMarkdownContainer"] * {
+  color: var(--text-primary) !important;
+}
+
+/* Table visibility fix */
+[data-testid="stMarkdownContainer"] table,
+[data-testid="stMarkdownContainer"] th,
+[data-testid="stMarkdownContainer"] td {
+  border: 1px solid var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-testid="stMarkdownContainer"] th {
+  background-color: #F1F5F9 !important;
+  font-weight: 700 !important;
+}
+
+/* Metric and Sidebar overrides */
+[data-testid="stMetricValue"], [data-testid="stMetricLabel"] {
+  color: var(--text-primary) !important;
 }
 
 [data-testid="stSidebar"] * {
   color: var(--text-primary) !important;
 }
 
-[data-testid="stMain"] {
-  background: var(--bg-main) !important;
-}
-
-/* Fix chat message text for light mode */
-[data-testid="stMarkdownContainer"] p {
-  color: var(--text-primary) !important;
-}
-
 /* Login card light mode adjustment */
 .login-card {
-  background: rgba(255, 255, 255, 0.9) !important;
-  border: 1px solid rgba(0,0,0,0.05) !important;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
-}
-
-/* Sidebar history item fix */
-.history-item {
   background: white !important;
   border: 1px solid var(--border-subtle) !important;
-}
-.history-item:hover {
-  background: #F1F5F9 !important;
-  border-color: var(--accent) !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08) !important;
 }
 
 /* Input area overrides */
 [data-testid="stChatInput"] {
   background: white !important;
-  border-color: var(--border-strong) !important;
+  border: 1.5px solid var(--border-strong) !important;
 }
 
 [data-testid="stChatInputTextArea"] textarea {
   color: var(--text-primary) !important;
+}
+
+/* Assistant Bubble - Soft shading but dark text */
+div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
+  background: var(--bg-bubble-ai) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+/* User Bubble - Keep blue but darken border */
+[data-testid="stChatMessage"][data-testid*="user"] {
+  border: 1px solid var(--accent) !important;
 }

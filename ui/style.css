@@ -121,28 +121,49 @@ div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"
 .blended-plus-container {
   position: fixed;
   bottom: 34px;
-  left: calc(31% + 30px); /* Better centering relative to main chat area */
+  left: calc(21rem + 20px); /* Relative to typical sidebar width */
   z-index: 1000;
   transform: translateX(-50%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @media (max-width: 1200px) {
-  .blended-plus-container { left: calc(50% + 50px); }
+  .blended-plus-container { left: 80px; }
 }
 
 @media (max-width: 768px) {
-  .blended-plus-container { left: 50px; }
+  /* On mobile, un-blend and stack neatly above input */
+  .blended-plus-container { 
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    margin-bottom: 10px;
+    padding-left: 10px;
+  }
+  [data-testid="stChatInput"] {
+    padding-left: 12px !important;
+  }
 }
 
 /* ─── Hero / Welcome Improvements ────────────────────────────────────────── */
-.welcome-container h2 {
-  font-size: 36px !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.02em;
-  margin-bottom: 12px !important;
+.welcome-container {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 20px;
+  background: rgba(var(--accent-glow), 0.03);
+  padding: 40px !important;
 }
 
-.welcome-container p {
+.welcome-container h2 {
+  font-size: 32px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em;
+  margin-bottom: 12px !important;
+  background: linear-gradient(135deg, var(--text-primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
   font-size: 16px !important;
   color: var(--text-muted) !important;
 }

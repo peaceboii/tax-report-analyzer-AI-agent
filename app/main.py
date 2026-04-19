@@ -178,15 +178,18 @@ def render_auth():
     else:
         st.warning("⚠️ Cloud Sync is currently disabled (Supabase keys missing)")
     
-    st.divider()
+    st.markdown("<div style='text-align:center; margin: 16px 0 8px; color:var(--text-dim); font-size:12px;'>OR</div>", unsafe_allow_html=True)
     
-    if st.button("🚀 Continue as Guest", use_container_width=True, type="primary"):
-        st.session_state.user = {
-            "id": f"guest_{uuid.uuid4().hex[:8]}",
-            "email": "guest@local",
-            "is_guest": True,
-        }
-        st.rerun()
+    # Constrain Guest button width
+    _, btn_col, _ = st.columns([1, 3, 1])
+    with btn_col:
+        if st.button("🚀 Continue as Guest", use_container_width=True, type="primary"):
+            st.session_state.user = {
+                "id": f"guest_{uuid.uuid4().hex[:8]}",
+                "email": "guest@local",
+                "is_guest": True,
+            }
+            st.rerun()
     
     st.markdown("<p style='text-align:center; color:var(--text-dim); font-size:11px; margin-top:20px;'>Guest mode saves history to local session only</p>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
