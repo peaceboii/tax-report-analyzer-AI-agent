@@ -1,40 +1,35 @@
 from __future__ import annotations
 
-"""
-app/main.py — AI Tax Assistant (Streamlit)
-───────────────────────────────────────────
-Features:
-  • Supabase OAuth (Google) login gate
-  • Sidebar: user info, sign-out, chat history from Supabase
-  • Header: title + 🌙 Dark/Light toggle
-  • (+) popover: file upload, country select, tool toggles
-  • Native st.chat_message rendering
-  • All messages persisted to Supabase Postgres
-"""
-
-import gc
+# ── Environment Monkeypatches ────────────────────────────────────────────────
 import sys
 
-# ── SQLite monkeypatch ───────────────────────────────────────────────────────
+# 1. SQLite: Fixes ChromaDB requirement for >= 3.35.0 on Streamlit Cloud
 try:
     import pysqlite3
     sys.modules["sqlite3"] = pysqlite3
 except ImportError:
     pass
-# ─────────────────────────────────────────────────────────────────────────────
 
-# ── NumPy monkeypatch (fixes ChromaDB < 0.5.x on NumPy 2.0+) ──────────────────
+# 2. NumPy: Fixes ChromaDB 0.4.x compatibility with NumPy 2.0+
 try:
     import numpy as np
+    # Restore legacy attributes removed in NumPy 2.0
     if not hasattr(np, "int_"):
-        np.int_ = np.intptr if hasattr(np, "intptr") else int
+        np.int_ = np.intp if hasattr(np, "intp") else int
     if not hasattr(np, "float_"):
         np.float_ = float
     if not hasattr(np, "bool_"):
         np.bool_ = bool
+    if not hasattr(np, "unicode_"):
+        np.unicode_ = str
 except ImportError:
     pass
 # ─────────────────────────────────────────────────────────────────────────────
+
+"""
+app/main.py — AI Tax Assistant (Streamlit)
+...
+"""
 
 
 import hashlib
